@@ -8,7 +8,7 @@ ENV GLIBC_VERSION=2.30-r0 \
     ODO_VERSION=v2.3.0 \
     OC_VERSION=4.8 \
     KUBECTL_VERSION=v1.20.6 \
-    TKN_VERSION=0.20.0 \
+    TKN_VERSION=0.22.0 \
     MAVEN_VERSION=3.6.3 \
     JDK_VERSION=11 \
     YQ_VERSION=2.4.1 \
@@ -22,7 +22,7 @@ RUN microdnf install -y \
     echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
 # install oc
-RUN wget -qO- https://mirror.openshift.com/pub/openshift-v4/clients//ocp/stable-${OC_VERSION}/openshift-client-linux.tar.gz | tar xvz -C /usr/local/bin && \
+RUN wget -qO- https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable-${OC_VERSION}/openshift-client-linux.tar.gz | tar xvz -C /usr/local/bin && \
     oc version --client
 
 # install odo
@@ -36,8 +36,8 @@ RUN chmod +x /usr/local/bin/kubectl && \
     kubectl version --client
 
 # install tekton
-RUN wget -qO- https://github.com/tektoncd/cli/releases/download/v${TKN_VERSION}/tkn_${TKN_VERSION}_Linux_x86_64.tar.gz | tar xvz -C /usr/local/bin && \
-    tkn version
+#RUN wget -qO- https://github.com/tektoncd/cli/releases/download/v${TKN_VERSION}/tkn_${TKN_VERSION}_Linux_x86_64.tar.gz | tar xvz -C /usr/local/bin && \
+#    tkn version
 
 # install yq
 RUN wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 && \
@@ -65,7 +65,7 @@ RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.
     microdnf clean all -y && \
     echo "Installed Telepresence Dependencies"
 
-RUN curl -sL http://git.io/get-ike | bash -s  -- --version=v${IKE_VERSION} --dir=/usr/local/bin --name ike && \
+RUN curl -sL http://git.io/get-ike | bash -s  -- --version=v${IKE_VERSION} --dir=/usr/local/bin --name=ike && \
     echo "Installed istio-workspace" && \
     ike version
 
