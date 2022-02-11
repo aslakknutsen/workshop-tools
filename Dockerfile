@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8-minimal:8.1-407
+FROM registry.access.redhat.com/ubi8-minimal:8.5
 
 ENV HOME=/home/developer
 
@@ -6,10 +6,10 @@ RUN mkdir -p /projects ${HOME}
 
 ENV GLIBC_VERSION=2.30-r0 \
     ODO_VERSION=v2.3.0 \
-    OC_VERSION=4.8 \
+    OC_VERSION=4.9 \
     KUBECTL_VERSION=v1.20.6 \
     TKN_VERSION=0.22.0 \
-    MAVEN_VERSION=3.6.3 \
+    MAVEN_VERSION=3.8.4 \
     JDK_VERSION=11 \
     YQ_VERSION=2.4.1 \
     ARGOCD_VERSION=v2.1.5 \
