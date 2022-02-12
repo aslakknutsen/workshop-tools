@@ -1,20 +1,19 @@
 FROM registry.access.redhat.com/ubi8-minimal:8.5
 
-ENV HOME=/home/developer
-
-RUN mkdir -p /projects ${HOME}
-
-ENV GLIBC_VERSION=2.30-r0 \
+ENV HOME=/home/developer \
+    GLIBC_VERSION=2.30-r0 \
     ODO_VERSION=v2.3.0 \
     OC_VERSION=4.9 \
     KUBECTL_VERSION=v1.20.6 \
     TKN_VERSION=0.22.0 \
     MAVEN_VERSION=3.8.4 \
     JDK_VERSION=11 \
-    YQ_VERSION=2.4.1 \
+    YQ_VERSION=4.19.1 \
     ARGOCD_VERSION=v2.1.5 \
     IKE_VERSION=0.4.0 \
     JAVA_TOOL_OPTIONS="-Djava.net.preferIPv4Stack=true"
+
+RUN mkdir -p /projects ${HOME}
 
 RUN microdnf install -y \
         bash curl wget tar gzip java-${JDK_VERSION}-openjdk-devel git openssh which httpd python36 procps && \
@@ -40,31 +39,31 @@ RUN chmod +x /usr/local/bin/kubectl && \
 #    tkn version
 
 # install yq
-RUN wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 && \
+RUN wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64 && \
     chmod +x /usr/local/bin/yq
 
 # install argocd
 RUN wget -qO /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/${ARGOCD_VERSION}/argocd-linux-amd64 && \
     chmod +x /usr/local/bin/argocd
 
-
-# install ike + telepresence
 # install telepresence
+RUN rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
+    microdnf install -y torsocks && \
+    rpm -e epel-release && \
+    microdnf clean all -y && \
+    rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
+    microdnf install -y sshfs && \
+    rpm -e epel-release && \
+    microdnf clean all -y && \
+    echo "Installed Telepresence Dependencies"
+
 ENV TELEPRESENCE_VERSION=0.109
 RUN git clone https://github.com/telepresenceio/telepresence.git && \
     cd telepresence && git checkout ${TELEPRESENCE_VERSION} &&\
     PREFIX=/usr/local ./install.sh && \
     echo "Installed Telepresence"
 
-RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
-    microdnf install -y sshfs && \
-    rpm -e epel-release-7-14 && \
-    rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
-    microdnf install -y torsocks && \
-    rpm -e epel-release-8-13.el8 && \
-    microdnf clean all -y && \
-    echo "Installed Telepresence Dependencies"
-
+# install ike
 RUN curl -sL http://git.io/get-ike | bash -s  -- --version=v${IKE_VERSION} --dir=/usr/local/bin --name=ike && \
     echo "Installed istio-workspace" && \
     ike version
